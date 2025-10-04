@@ -2,17 +2,20 @@ import discord
 from discord.ext import commands
 import os 
 
-# Token vem da variável de ambiente (Render usa isso)
+# Token vem da variável de ambiente
 TOKEN = os.getenv("TOKEN")
 
 
 # Usuário que o bot deve manter o nick
-NICK_TARGET_ID = 765711397371379732  # Substitua pelo ID correto
+NICK_TARGET_ID = 765711397371379732  
 NICK_TARGET_NAME = "MANCER GAMES"
 
-# Usuário que o bot deve monitorar e mandar mensagem ao ficar online
-MSG_TARGET_ID = 455011986267176972  # Substitua pelo ID correto
-CHANNEL_ID = 1239254305131856025    # Canal onde a mensagem será enviada
+# Usuário que o bot deve monitorar e mandar mensagem ao ficar online (texto)
+MSG_TARGET_ID = 455011986267176972  
+CHANNEL_ID = 1239254305131856025    
+
+# Usuário que deve receber mensagem + imagem
+IMG_TARGET_ID = 638377524635893780  # <<< Substituir pelo ID do usuário
 
 intents = discord.Intents.default()
 intents.members = True
@@ -25,7 +28,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
 
-    # Ajusta o nick na inicialização (se precisar)
+    # Ajusta o nick na inicialização
     for guild in bot.guilds:
         member = guild.get_member(NICK_TARGET_ID)
         if member and member.nick != NICK_TARGET_NAME:
@@ -47,9 +50,9 @@ async def on_member_update(before, after):
 
 @bot.event
 async def on_presence_update(before, after):
-    # Verifica se é o usuário que deve receber mensagem (MSG_TARGET_ID)
+    # ---- Target 2: Mensagem de texto ----
     if after.id == MSG_TARGET_ID:
-        # Checa se o usuário acabou de ficar online
+
         if after.status == discord.Status.online and before.status != discord.Status.online:
             print(f"✅ {after.name} acabou de ficar online!")
             
@@ -63,5 +66,25 @@ async def on_presence_update(before, after):
                             print("✅ Mensagem enviada com sucesso!")
                         except Exception as e:
                             print(f"❌ Erro ao enviar mensagem: {e}")
+
+    # ---- Target 3: Mensagem + Imagem ----
+    if after.id == IMG_TARGET_ID:
+        if after.status == discord.Status.online and before.status != discord.Status.online:
+            print(f"✅ {after.name} acabou de ficar online (com imagem)!")
+
+            for guild in bot.guilds:
+                member = guild.get_member(IMG_TARGET_ID)
+                if member:
+                    channel = guild.get_channel(CHANNEL_ID)
+                    if channel:
+                        try:
+                            file = discord.File("meme.png", filename="meme.png")  # Imagem local
+                            await channel.send(
+    content=f"Você <@{IMG_TARGET_ID}>",
+    embed=discord.Embed().set_image(url="https://i.imgur.com/image.png")
+)
+                            print("✅ Mensagem + imagem enviada com sucesso!")
+                        except Exception as e:
+                            print(f"❌ Erro ao enviar mensagem com imagem: {e}")
 
 bot.run(TOKEN)
