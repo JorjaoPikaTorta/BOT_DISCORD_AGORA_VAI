@@ -67,23 +67,24 @@ async def on_presence_update(before, after):
                         except Exception as e:
                             print(f"❌ Erro ao enviar mensagem: {e}")
 
-   # ---- Target 3: Mensagem + Imagem ----
-if after.id == IMG_TARGET_ID:
-    if after.status == discord.Status.online and before.status != discord.Status.online:
-        print(f"✅ {after.name} acabou de ficar online (com imagem)!")
+    # ---- Target 3: Mensagem + Imagem ----
+    if after.id == IMG_TARGET_ID:
+        if after.status == discord.Status.online and before.status != discord.Status.online:
+            print(f"✅ {after.name} acabou de ficar online (com imagem)!")
 
-        for guild in bot.guilds:
-            member = guild.get_member(IMG_TARGET_ID)
-            if member:
-                channel = guild.get_channel(CHANNEL_ID)
-                if channel:
-                    try:
-                        file = discord.File("image.png", filename="image.png")  # Imagem local
-                        await channel.send(
-                            content=f"Você <@{IMG_TARGET_ID}>",
-                            file=file
-                        )
-                        print("✅ Mensagem + imagem enviada com sucesso!")
-                    except Exception as e:
-                        print(f"❌ Erro ao enviar mensagem com imagem: {e}")
+            for guild in bot.guilds:
+                member = guild.get_member(IMG_TARGET_ID)
+                if member:
+                    channel = guild.get_channel(CHANNEL_ID)
+                    if channel:
+                        try:
+                            file = discord.File("image.png", filename="image.png")  # Imagem local
+                            await channel.send(
+                                content=f"Você <@{IMG_TARGET_ID}>",
+                                file=file
+                            )
+                            print("✅ Mensagem + imagem enviada com sucesso!")
+                        except Exception as e:
+                            print(f"❌ Erro ao enviar mensagem com imagem: {e}")
+
 bot.run(TOKEN)
